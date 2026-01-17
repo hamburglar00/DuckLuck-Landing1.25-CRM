@@ -1,0 +1,272 @@
+/* ==========================
+   Reset liviano y base
+   ========================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
+  color: #fff;
+  background-color: #000;
+}
+
+/* ==========================
+   Hero de fondo
+   ========================== */
+.background-image {
+  background: #000 url("imagenes/fondo.png") center / cover no-repeat;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.content {
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Evita CLS */
+.logo {
+  width: 200px;
+  height: 200px;
+  aspect-ratio: 1 / 1;
+}
+
+.title {
+  margin: 10px 0 15px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* ==========================
+   Botón principal WhatsApp
+   ========================== */
+.whatsapp-button {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: linear-gradient(145deg, #155c3d, #0e2d1e);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 12px 16px;
+  border: 3px solid #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  margin-top: 25px;
+  gap: 8px;
+  min-width: 180px;
+  box-shadow: 0 0 30px 8px gold,
+              inset 0 1px 0 #ffffff33,
+              0 0 12px 2px #10392899;
+  animation: heartbeat 2s infinite ease-in-out;
+  transition: transform 0.3s ease-in-out;
+  will-change: transform;
+}
+
+.whatsapp-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 50%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,.6), transparent);
+  transform: translateX(-150%) skewX(-25deg);
+  animation: shineX 3.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes shineX {
+  from { transform: translateX(-150%) skewX(-25deg); }
+  to   { transform: translateX(300%) skewX(-25deg); }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.03); }
+}
+
+.whatsapp-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.subtitle {
+  font-size: 19px;
+  margin-top: 40px;
+}
+
+.description {
+  color: gold;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 35px 0 50px;
+}
+
+/* Motion reducido */
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp-button,
+  .whatsapp-button::before { animation: none !important; }
+  .whatsapp-button { transition: none; }
+}
+
+/* ==========================
+   Floating WhatsApp + burbuja
+   ========================== */
+.wa-float {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9999;
+}
+
+.wa-float__btn {
+  width: 62px;
+  height: 62px;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f3a26;
+  box-shadow: 0 0 26px 8px rgba(255,215,0,.55),
+              0 12px 30px rgba(0,0,0,.45);
+  transition: transform .15s ease;
+}
+
+.wa-float__btn:active { transform: scale(.97); }
+
+.wa-float__icon {
+  width: 30px;
+  height: 30px;
+}
+
+.wa-bubble {
+  position: absolute;
+  right: 0;
+  bottom: 76px;
+  width: min(330px, calc(100vw - 32px));
+  border-radius: 16px;
+  overflow: hidden;
+  transform: translateY(10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: .18s ease;
+  background: rgba(10,14,10,.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 16px 40px rgba(0,0,0,.55);
+}
+
+.wa-bubble.is-open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.wa-bubble__header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  font-weight: 800;
+}
+
+.wa-bubble__close {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.wa-bubble__body { padding: 12px; }
+
+.wa-msg {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.1);
+  font-size: 14px;
+}
+
+.wa-bubble__footer {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.wa-input {
+  flex: 1;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  padding: 10px;
+}
+
+.wa-send {
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 800;
+  background: rgba(255,215,0,.95);
+  color: #0b130c;
+  border: none;
+}
+
+/* ==========================
+   Auto redirect overlay
+   ========================== */
+.wa-redirect-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0,0,0,.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+/* 🔒 CLAVE: oculto si tiene hidden */
+.wa-redirect-overlay[hidden] {
+  display: none !important;
+}
+
+.wa-redirect-box {
+  width: min(360px, calc(100vw - 32px));
+  background: rgba(15,20,15,.92);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  box-shadow: 0 16px 40px rgba(0,0,0,.55);
+}
+
+.wa-redirect-text {
+  font-weight: 800;
+}
+
+.wa-redirect-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 3px solid rgba(255,255,255,.25);
+  border-top-color: rgba(255,215,0,.95);
+  animation: waSpin .8s linear infinite;
+}
+
+@keyframes waSpin { to { transform: rotate(360deg); } }
