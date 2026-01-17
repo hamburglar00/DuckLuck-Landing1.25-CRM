@@ -13,7 +13,18 @@ body {
    Hero de fondo
    ========================== */
 .background-image {
-  background: #000 url("imagenes/fondo.png") center / cover no-repeat;
+  background-color: #000;
+
+  /* AVIF si se puede, si no PNG */
+  background-image: image-set(
+    url("imagenes/fondo.avif") type("image/avif"),
+    url("imagenes/fondo.png") type("image/png")
+  );
+
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
   width: 100%;
   min-height: 100vh;
   display: flex;
@@ -21,6 +32,7 @@ body {
   justify-content: center;
   position: relative;
 }
+
 
 .overlay {
   position: absolute;
