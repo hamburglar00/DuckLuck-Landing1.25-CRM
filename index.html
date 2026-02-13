@@ -85,13 +85,16 @@
 const LANDING_CONFIG = {
   BRAND_NAME: "",
   MODE: "ads",
-
-  STATIC_NUMBER: "5493513131230",
-  STATIC_NAME: "Toti y Lola",
-
   PROMO: { ENABLED: true, LANDING_TAG: "DL3" },
   GEO: { ENABLED: true, PROVIDER_URL: "https://ipapi.co/json/", TIMEOUT_MS: 900 }
 };
+
+/************************************************************
+ * NÚMEROS FIJOS (round-robin) — funciona con 1 o con varios
+ ************************************************************/
+const FIXED_PHONES = [
+  "5493513131230"
+];
 
 /************************************************************
  * Helpers
@@ -164,13 +167,38 @@ function buildMensaje(botName, promo_code){
 }
 
 /************************************************************
+ * Número desde array (round-robin)
+ ************************************************************/
+let __pickedResult = null;
+
+function getNumberFromFixed(){
+  const pool = (FIXED_PHONES || [])
+    .map(normalizePhoneDigits)
+    .filter(n => /^\d{8,17}$/.test(n));
+  if(!pool.length) return null;
+
+  const key = "wa_rr_index_fixed";
+  let i = parseInt(localStorage.getItem(key) || "0", 10);
+  if(!Number.isFinite(i) || i < 0) i = 0;
+  const number = pool[i % pool.length];
+  localStorage.setItem(key, String((i + 1) % pool.length));
+  return { number, name: LANDING_CONFIG.BRAND_NAME, meta: { fixed: true } };
+}
+
+/************************************************************
  * CLICK: redirect ASAP, tracking after (no bloquea)
  ************************************************************/
 function contactarWhatsApp({ source="main_button" } = {}){
   if (window.__waInFlight) return;
   window.__waInFlight = true;
 
-  const cleanPhone = normalizePhoneDigits(LANDING_CONFIG.STATIC_NUMBER);
+  const picked = __pickedResult || getNumberFromFixed();
+  if(!picked){
+    window.__waInFlight = false;
+    return;
+  }
+
+  const cleanPhone = normalizePhoneDigits(picked.number);
   if(!/^\d{8,17}$/.test(cleanPhone)){
     window.__waInFlight = false;
     return;
@@ -180,8 +208,7 @@ function contactarWhatsApp({ source="main_button" } = {}){
   const promo_code = LANDING_CONFIG.PROMO.ENABLED
     ? `${LANDING_CONFIG.PROMO.LANDING_TAG}-${uuidSegment}`
     : "";
-  const botName = LANDING_CONFIG.STATIC_NAME || "Soporte";
-  const mensaje = buildMensaje(botName, promo_code);
+  const mensaje = buildMensaje(picked.name || "Soporte", promo_code);
 
   // Pixel Contact enriquecido (no bloquea)
   const event_id = generateUUID();
@@ -249,6 +276,8 @@ function contactarWhatsApp({ source="main_button" } = {}){
  * UI wiring
  ************************************************************/
 document.addEventListener("DOMContentLoaded",()=>{
+  __pickedResult = getNumberFromFixed();
+
   const btn = document.getElementById("whatsappButton");
   if(btn){
     btn.addEventListener("click",(e)=>{
