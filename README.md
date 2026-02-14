@@ -10,7 +10,7 @@ Landing page con redirección instantánea a WhatsApp + envío de datos a Google
 Usuario abre la landing
   → Pixel PageView (diferido, no bloquea)
   → Click botón
-    → Número seleccionado (round-robin local)
+    → Número seleccionado (aleatorio)
     → Promo code generado (UUID único)
     → Pixel Contact enriquecido (no bloquea)
     → (async) GEO detection + fetch /api/xz3v2q → Google Sheets (no bloquea)
@@ -38,7 +38,7 @@ Google Sheets (Apps Script):
 ### Idénticas a Chiva77 1.25
 
 - Meta Pixel diferido (PageView + Contact enriquecido con advanced matching).
-- Round-robin de números (`FIXED_PHONES` + `localStorage`).
+- Selección aleatoria de números (`FIXED_PHONES` + `Math.random()`).
 - Promo code único por click.
 - Mensaje aleatorio.
 - Anti doble-click (`__waInFlight`).
